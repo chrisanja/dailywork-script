@@ -1,0 +1,28 @@
+function createNumberedFoldersFromSheet() {
+  var sheet = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();
+  
+  // Get all data from the first column
+  var values = sheet.getRange(1, 1, sheet.getLastRow(), 1).getValues();
+  
+  // Parent folder: set ID or leave empty for My Drive
+  var parentFolderId = "PARENTFOLDERID"; // Example: "1AbCdEfG345ghIjKlMdfnOp"
+  var parentFolder = parentFolderId 
+    ? DriveApp.getFolderById(parentFolderId) 
+    : DriveApp.getRootFolder();
+  
+  // Clean, remove empty rows, and create folders with numbering
+  var cleanList = values
+    .map(function(row) {
+      return row[0] ? row[0].toString().trim() : "";
+    })
+    .filter(function(name) {
+      return name.length > 0; // Skip blanks
+    });
+  
+  cleanList.forEach(function(name, index) {
+    var numberedName = (index + 1) + ". " + name;
+    parentFolder.createFolder(numberedName);
+  });
+  
+  SpreadsheetApp.getUi().alert("✅ " + cleanList.length + " folders created successfully!");
+}
